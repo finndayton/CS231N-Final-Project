@@ -1,0 +1,3 @@
+[submodule "vit-explain"]
+	path = vit-explain
+	url = https://github.com/jacobgil/vit-explain.git
