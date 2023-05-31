@@ -16,17 +16,23 @@ def main():
     # Loading data
     transform = ToTensor()
 
-    train_set = CIFAR10(root='./../datasets', train=True, download=True, transform=transform)
-    test_set = CIFAR10(root='./../datasets', train=False, download=True, transform=transform)
+    train_set = MNIST(root='./../datasets', train=True, download=True, transform=transform)
+    test_set = MNIST(root='./../datasets', train=False, download=True, transform=transform)
 
-    print(f"size of training set: {len(train_set)}")
-    print(f"size of test set: {len(test_set)}")
+    train_loader = DataLoader(train_set, shuffle=True, batch_size=128)
+    test_loader = DataLoader(test_set, shuffle=False, batch_size=128)
+
+    # train_set = CIFAR10(root='./../datasets', train=True, download=True, transform=transform)
+    # test_set = CIFAR10(root='./../datasets', train=False, download=True, transform=transform)
+
+    # print(f"size of training set: {len(train_set)}")
+    # print(f"size of test set: {len(test_set)}")
+    # train_loader = DataLoader(train_set, shuffle=True, batch_size=128)
+    # test_loader = DataLoader(test_set, shuffle=False, batch_size=128)
 
     image, _ = train_set[0]  # Get the first image from the dataset (ignoring the label)
     image_dims = image.shape
 
-    train_loader = DataLoader(train_set, shuffle=True, batch_size=128)
-    test_loader = DataLoader(test_set, shuffle=False, batch_size=128)
 
     # Defining model and training options
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
