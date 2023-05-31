@@ -4,6 +4,7 @@ from torch.optim import Adam
 from torch.nn import CrossEntropyLoss
 from torchvision.transforms import ToTensor
 from torchvision.datasets import CIFAR10
+from torchvision.datasets.mnist import MNIST
 from tqdm import tqdm, trange
 
 

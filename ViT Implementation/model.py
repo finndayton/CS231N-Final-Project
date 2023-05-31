@@ -9,6 +9,8 @@ from utils import *
 
 class ViT(nn.Module):
 
+    
+
     def __init__(self, chw = (3, 32, 32), n_patches = 8, n_blocks=1, hidden_dim = 16, n_heads=2, n_classes=10):
         super(ViT, self).__init__()
         self.chw = chw
