@@ -1,5 +1,5 @@
 import torch
-
+import numpy as np
 
 # Converts an image of dims [N, C, H, W] to patches of dims [N, n_patches^2, H * W * C / n_patches^2]
 def image_to_patches(image, n_patches):
