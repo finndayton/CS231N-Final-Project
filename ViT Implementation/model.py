@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from utils import image_to_patches
+from utils import *
 
 
 # Code is adapted from: https://medium.com/mlearning-ai/vision-transformers-from-scratch-pytorch-a-step-by-step-guide-96c3313c2e0c
@@ -29,7 +29,8 @@ class ViT(nn.Module):
         self.class_token = nn.Parameter(torch.randn(1, 1, hidden_dim))
 
         # Positional embedding
-        self.positional_embedding = nn.Parameter(torch.randn(n_patches ** 2 + 1, hidden_dim))
+        self.positional_embedding = nn.Parameter(torch.tensor(get_positional_embeddings(self.n_patches ** 2 + 1, self.hidden_d)))
+        self.positional_embedding.requires_grad = False
 
         # Transformer encoder blocks 
         self.transformer_blocks = nn.Sequential(*[ViTBlock(hidden_dim, n_heads) for _ in range(n_blocks)])
