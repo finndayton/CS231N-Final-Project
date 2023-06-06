@@ -8,7 +8,7 @@ from tqdm import tqdm, trange
 import argparse
 
 
-from model import ViT
+from ViT_Implementation.model import ViT
 
 # Code is adapted from: https://medium.com/mlearning-ai/vision-transformers-from-scratch-pytorch-a-step-by-step-guide-96c3313c2e0c
 # Credit goes to Brian Pulfer

@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from utils import *
+from ViT_Implementation.utils import *
 
 
 # Code is adapted from: https://medium.com/mlearning-ai/vision-transformers-from-scratch-pytorch-a-step-by-step-guide-96c3313c2e0c
