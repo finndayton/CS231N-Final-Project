@@ -9,8 +9,10 @@ import cv2
 def grad_rollout(attentions, gradients, discard_ratio):
     result = torch.eye(attentions[0].size(-1))
     with torch.no_grad():
-        for attention, grad in zip(attentions, gradients):                
-            weights = grad
+        for attention, grad in zip(attentions, gradients): 
+            # print("before reshape", attention.shape, grad.shape)               
+            weights = grad # .reshape(attention.shape)
+            print(attention.shape, weights.shape)
             attention_heads_fused = (attention*weights).mean(axis=1)
             attention_heads_fused[attention_heads_fused < 0] = 0
 
@@ -41,6 +43,7 @@ class VITAttentionGradRollout:
         self.model = model
         self.discard_ratio = discard_ratio
         for name, module in self.model.named_modules():
+            # print(name, type(module))
             if attention_layer_name in name:
                 print(name)
                 module.register_forward_hook(self.get_attention)
@@ -50,13 +53,18 @@ class VITAttentionGradRollout:
         self.attention_gradients = []
 
     def get_attention(self, module, input, output):
+        print("att", output.shape)
         self.attentions.append(output.cpu())
 
     def get_attention_gradient(self, module, grad_input, grad_output):
-        self.attention_gradients.append(grad_input[0].cpu())
+        grad = grad_input[0]
+        # grad = grad_input[0].squeeze()
+        # print("grad", grad.shape)
+        self.attention_gradients.append(grad.cpu())
 
     def __call__(self, input_tensor, category_index):
         self.model.zero_grad()
+        print(input_tensor.shape)
         output = self.model(input_tensor)
         category_mask = torch.zeros(output.size())
         category_mask[:, category_index] = 1

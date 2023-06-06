@@ -8,7 +8,7 @@ from tqdm import tqdm, trange
 import argparse
 
 
-from ViT_Implementation.model import ViT
+from model import ViT
 
 # Code is adapted from: https://medium.com/mlearning-ai/vision-transformers-from-scratch-pytorch-a-step-by-step-guide-96c3313c2e0c
 # Credit goes to Brian Pulfer
@@ -20,16 +20,16 @@ def main():
     )
 
     parser.add_argument(
-        "--hidden_dim", "-d", type=int, required=True, help="hidden dimension size"
+        "--hidden_dim", "-d", type=int, default=16, help="hidden dimension size"
     )
     parser.add_argument(
-        "--n_heads", "-n", type=int, required=True, help="number of heads"
+        "--n_heads", "-n", type=int, default=2, help="number of heads"
     )
     parser.add_argument(
-        "--n_patches", "-p", type=int, required=True, help="number of patches"
+        "--n_patches", "-p", type=int, default=8, help="number of patches"
     )
     parser.add_argument(
-        "--n_blocks", "-b", type=int, required=True, help="number of patches"
+        "--n_blocks", "-b", type=int, default=1, help="number of patches"
     )
 
     args = parser.parse_args()

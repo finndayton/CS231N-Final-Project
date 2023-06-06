@@ -48,11 +48,15 @@ if __name__ == '__main__':
 
     model = None
     attention_layer_name = 'attn_drop'
+    SIZE = 224
     if args.model_path:
+        print("Using our model")
         attention_layer_name = 'mhsa'
         model = ViT()
         model.load_state_dict(torch.load(args.model_path))
+        SIZE = 32
     else:
+        print("Using facebook model")
         model = torch.hub.load('facebookresearch/deit:main', 
             'deit_tiny_patch16_224', pretrained=True)
         
@@ -62,12 +66,12 @@ if __name__ == '__main__':
         model = model.cuda()
 
     transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+        transforms.Resize((SIZE, SIZE)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     ])
     img = Image.open(args.image_path)
-    img = img.resize((224, 224))
+    img = img.resize((SIZE, SIZE))
     input_tensor = transform(img).unsqueeze(0)
     if args.use_cuda:
         input_tensor = input_tensor.cuda()
