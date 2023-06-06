@@ -3,7 +3,9 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.nn import CrossEntropyLoss
 from torchvision.transforms import ToTensor
-from torchvision.datasets import CIFAR10
+from torchvision.datasets import CIFAR10, ImageNet
+from torchvision.transforms import Compose, Resize, ToTensor
+from datasets import load_dataset
 from tqdm import tqdm, trange
 import argparse
 
@@ -23,27 +25,30 @@ def main():
         "--hidden_dim", "-d", type=int, default=16, help="hidden dimension size"
     )
     parser.add_argument(
-        "--n_heads", "-n", type=int, default=2, help="number of heads"
+        "--n_heads", "-n", type=int, default=4, help="number of heads"
     )
     parser.add_argument(
         "--n_patches", "-p", type=int, default=8, help="number of patches"
     )
     parser.add_argument(
-        "--n_blocks", "-b", type=int, default=1, help="number of patches"
+        "--n_blocks", "-b", type=int, default=4, help="number of patches"
     )
 
     args = parser.parse_args()
     # n_patches=8, n_blocks=2, hidden_dim=8, n_heads=2, n_classes=10)
 
     # Loading data
-    transform = ToTensor()
+    # transform = ToTensor()
+    transform = Compose([Resize((224, 224)), ToTensor()])
 
-    train_set = CIFAR10(
-        root="./../datasets", train=True, download=True, transform=transform
-    )
-    test_set = CIFAR10(
-        root="./../datasets", train=False, download=True, transform=transform
-    )
+    # train_set = ImageNet(
+    #     root="./../datasets", train=True, download=True, transform=transform
+    # )
+    # test_set = ImageNet(
+    #     root="./../datasets", train=False, download=True, transform=transform
+    # )
+    dataset = load_dataset("imagenet-1k")
+    return
 
     print(f"size of training set: {len(train_set)}")
     print(f"size of test set: {len(test_set)}")
