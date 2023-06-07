@@ -13,7 +13,7 @@ from utils import *
 
 
 class ViT(nn.Module):
-    def __init__(self, chw = (3, 224, 224), n_patches = 8, n_blocks=4, hidden_dim = 16, n_heads=4, n_classes=10):
+    def __init__(self, chw = (3, 224, 224), n_patches = 8, n_blocks=4, hidden_dim = 16, n_heads=4, n_classes=1000):
         super(ViT, self).__init__()
         self.chw = chw
         self.n_patches = n_patches
