@@ -63,7 +63,12 @@ def get_prediction(img_path, threshold):
     transform = T.Compose([T.ToTensor()])
     img = transform(img)
     pred = model([img])
+    print("pred", len(pred))
     pred_score = list(pred[0]['scores'].detach().numpy())
+    print("threshold", threshold)
+    print("pred_score", len(pred_score))
+    for x in pred_score:
+        print(x)
     pred_t = [pred_score.index(x) for x in pred_score if x>threshold][-1]
     masks = (pred[0]['masks']>0.5).squeeze().detach().cpu().numpy()
     pred_class = [COCO_INSTANCE_CATEGORY_NAMES[i] for i in list(pred[0]['labels'].numpy())]
@@ -93,11 +98,12 @@ def segment_image(img_path, threshold=0.5, rect_th=3, text_size=3, text_th=3):
         rgb_mask = random_colour_masks(masks[i])
         img = cv2.addWeighted(img, 1, rgb_mask, 0.5, 0)
         cv2.rectangle(img, (int(boxes[i][0][0]), int(boxes[i][0][1])), (int(boxes[i][1][0]), int(boxes[i][1][1])),color=(0, 255, 0), thickness=rect_th)
-        cv2.putText(img, pred_cls[i], (int(boxes[i][0][0]), int(boxes[i][0][1])), cv2.FONT_HERSHEY_SIMPLEX, text_size, (0,255,0),thickness=text_th)
-    plt.imshow(img)
-    plt.xticks([])
-    plt.yticks([])
-    plt.show()
+        #cv2.putText(img, pred_cls[i], (int(boxes[i][0][0]), int(boxes[i][0][1])), cv2.FONT_HERSHEY_SIMPLEX, text_size, (0,255,0),thickness=text_th)
+    cv2.imwrite("segment.png", img)    
+    #plt.imshow(img)
+    #plt.xticks([])
+    #plt.yticks([])
+    #plt.show()
 
 if __name__ == "__main__":
   segment_image(sys.argv[1])

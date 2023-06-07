@@ -51,10 +51,10 @@ if __name__ == '__main__':
     SIZE = 224
     if args.model_path:
         print("Using our model")
-        attention_layer_name = 'mhsa'
+        attention_layer_name = 'softmax'
         model = ViT()
         model.load_state_dict(torch.load(args.model_path))
-        SIZE = 32
+        SIZE = 64
     else:
         print("Using facebook model")
         model = torch.hub.load('facebookresearch/deit:main', 
@@ -72,6 +72,7 @@ if __name__ == '__main__':
     ])
     img = Image.open(args.image_path)
     img = img.resize((SIZE, SIZE))
+    img = img.convert('RGB')
     input_tensor = transform(img).unsqueeze(0)
     if args.use_cuda:
         input_tensor = input_tensor.cuda()
@@ -93,8 +94,8 @@ if __name__ == '__main__':
     np_img = np.array(img)[:, :, ::-1]
     mask = cv2.resize(mask, (np_img.shape[1], np_img.shape[0]))
     mask = show_mask_on_image(np_img, mask)
-    cv2.imshow("Input Image", np_img)
-    cv2.imshow(name, mask)
+    #cv2.imshow("Input Image", np_img)
+    #cv2.imshow(name, mask)
     cv2.imwrite("input.png", np_img)
     cv2.imwrite(name, mask)
-    cv2.waitKey(-1)
+    #cv2.waitKey(-1)

@@ -41,7 +41,7 @@ def main():
     # Loading data
     # transform = ToTensor()
     transform = Compose([
-        Resize((224, 224)),
+        Resize((64, 64)),
         Lambda(lambda x: x.convert('RGB')),
         ToTensor()
     ])
@@ -51,22 +51,36 @@ def main():
         example['image'] = transform(example['image'])
         #print(type(example['image']))
         return example
-
     
-    dataset = load_dataset("imagenet-1k")
-    # print(dataset)
+    dataset = load_dataset("Maysee/tiny-imagenet")
+    print(dataset)
+
+    filtered_train_set = []
+    filtered_test_set = []
+
+    for i, label in enumerate(dataset['train']['label']):
+        if label < 10:
+            filtered_train_set.append(i)
+
+    for i, label in enumerate(dataset['valid']['label']):
+        if label < 10:
+            filtered_test_set.append(i)
 
     # Get random indices from the range 0 to len(dataset)
-    random_indices_train = random.sample(range(len(dataset['train'])), 100000)
-    random_indices_test = random.sample(range(len(dataset['train'])), 5000)
+    #random_indices_train = random.sample(range(len(dataset['train'])), 10000)
+    #random_indices_test = random.sample(range(len(dataset['valid'])), 100)
     
     # Select random samples from the train set
-    train_set = dataset['train'].select(random_indices_train).map(apply_transform)
-    test_set = dataset['train'].select(random_indices_test).map(apply_transform)
+    #train_set = dataset['train'].select(random_indices_train).map(apply_transform)
+    #test_set = dataset['valid'].select(random_indices_test).map(apply_transform)
+
+    train_set = dataset['train'].select(filtered_train_set).map(apply_transform)
+    test_set = dataset['valid'].select(filtered_test_set).map(apply_transform)
     
     train_set.set_format(type='torch', columns=['image', 'label'])
     test_set.set_format(type='torch', columns=['image', 'label'])
-    
+
+    print(filtered_train_set)
     #print(train_set)
     
     print(f"size of training set: {len(train_set)}")
@@ -95,7 +109,7 @@ def main():
         n_blocks=args.n_blocks,
         hidden_dim=args.hidden_dim,
         n_heads=args.n_heads,
-        n_classes=1000,
+        n_classes=10,
     ).to(device)
 
 
@@ -105,7 +119,7 @@ def main():
 
     # CIFAR Call
     # model = ViT(image_dims, n_patches=8, n_blocks=2, hidden_dim=8, n_heads=2, n_classes=10).to(device)
-    N_EPOCHS = 1
+    N_EPOCHS = 10
     LR = 0.01
 
     # Training loop
@@ -119,7 +133,7 @@ def main():
         ):
             x = batch['image']
             y = batch['label']
-            print("train", y)
+            #print("train", y)
             x, y = x.to(device), y.to(device)
             y_hat = model(x)
             loss = criterion(y_hat, y)
@@ -132,7 +146,7 @@ def main():
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        print(f"Train accuracy: {t_correct / t_total * 100:.2f}%")
+            print(f"Train accuracy: {t_correct / t_total * 100:.2f}%")
 
         print(f"Epoch {epoch + 1}/{N_EPOCHS} loss: {train_loss:.2f}")
 
@@ -143,7 +157,7 @@ def main():
         for batch in tqdm(test_loader, desc="Testing"):
             x = batch['image']
             y = batch['label']
-            print("test", y)
+            #print("test", y)
             x, y = x.to(device), y.to(device)
             y_hat = model(x)
             loss = criterion(y_hat, y)
@@ -154,7 +168,7 @@ def main():
         print(f"Test loss: {test_loss:.2f}")
         print(f"Test accuracy: {correct / total * 100:.2f}%")
     # save the model to disk
-    torch.save(model.state_dict(), "mymodel.pth")
+    torch.save(model.state_dict(), "mymodeltiny.pth")
 
 if __name__ == "__main__":
     main()
