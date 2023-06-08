@@ -1,0 +1,12 @@
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/1_4_8_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/2_4_8_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_1_8_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_2_8_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_4_4_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_4_8_False_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_4_8_True_False.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_4_8_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_4_16_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_4_32_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/4_8_8_True_True.pth
+python3 vit_explain.py --image_path $1 --head_fusion max --discard_ratio 0.9 --category_index 0 --model_path ViT_Implementation/trained_models/8_4_8_True_True.pth

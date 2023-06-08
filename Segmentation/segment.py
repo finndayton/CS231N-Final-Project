@@ -79,7 +79,7 @@ def get_prediction(img_path, threshold):
     return masks, pred_boxes, pred_class
 
 
-def segment_image(img_path, threshold=0.5, rect_th=3, text_size=3, text_th=3):
+def segment_image(img_path, threshold=0.3, rect_th=3, text_size=3, text_th=3):
     """
     instance_segmentation_api
     parameters:
@@ -100,6 +100,7 @@ def segment_image(img_path, threshold=0.5, rect_th=3, text_size=3, text_th=3):
         cv2.rectangle(img, (int(boxes[i][0][0]), int(boxes[i][0][1])), (int(boxes[i][1][0]), int(boxes[i][1][1])),color=(0, 255, 0), thickness=rect_th)
         #cv2.putText(img, pred_cls[i], (int(boxes[i][0][0]), int(boxes[i][0][1])), cv2.FONT_HERSHEY_SIMPLEX, text_size, (0,255,0),thickness=text_th)
     cv2.imwrite("segment.png", img)    
+    return masks
     #plt.imshow(img)
     #plt.xticks([])
     #plt.yticks([])
@@ -107,3 +108,6 @@ def segment_image(img_path, threshold=0.5, rect_th=3, text_size=3, text_th=3):
 
 if __name__ == "__main__":
   segment_image(sys.argv[1])
+
+
+

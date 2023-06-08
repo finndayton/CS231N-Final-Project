@@ -6,6 +6,7 @@ from torchvision import transforms
 import numpy as np
 import cv2
 from ViT_Implementation.model import ViT
+import os
 
 
 from Visualization.vit_rollout import VITAttentionRollout
@@ -43,17 +44,39 @@ def show_mask_on_image(img, mask):
     cam = cam / np.max(cam)
     return np.uint8(255 * cam)
 
-if __name__ == '__main__':
-    args = get_args()
 
+def main(model_path=None, use_cuda=False, category_index=None, head_fusion="max", discard_ratio=0.9):
     model = None
     attention_layer_name = 'attn_drop'
     SIZE = 224
-    if args.model_path:
+    output_filename = "output.png"
+    if model_path:
         print("Using our model")
         attention_layer_name = 'softmax'
-        model = ViT()
-        model.load_state_dict(torch.load(args.model_path))
+        base_name = os.path.basename(model_path)
+        file_name_without_extension = os.path.splitext(base_name)[0]
+        parts = file_name_without_extension.split("_")
+        print(parts)
+
+        output_filename = f"Visualization/outputs/{file_name_without_extension}.png"
+
+        nheads = int(parts[0])
+        nblocks = int(parts[1])
+        hidden_dim = int(parts[2])
+        norm = bool(parts[3])
+        res = bool(parts[4])
+        pos = parts[5] if len(parts) > 5 else "trig"
+        
+        model = ViT(
+            n_blocks=nblocks,
+            hidden_dim=hidden_dim,
+            n_heads=nheads,
+            n_classes=10,
+            res=res,
+            layer=norm,
+            pos=pos
+        )
+        model.load_state_dict(torch.load(model_path))
         SIZE = 64
     else:
         print("Using facebook model")
@@ -62,7 +85,7 @@ if __name__ == '__main__':
         
     model.eval()
 
-    if args.use_cuda:
+    if use_cuda:
         model = model.cuda()
 
     transform = transforms.Compose([
@@ -74,21 +97,21 @@ if __name__ == '__main__':
     img = img.resize((SIZE, SIZE))
     img = img.convert('RGB')
     input_tensor = transform(img).unsqueeze(0)
-    if args.use_cuda:
+    if use_cuda:
         input_tensor = input_tensor.cuda()
 
-    if args.category_index is None:
+    if category_index is None:
         print("Doing Attention Rollout")
-        attention_rollout = VITAttentionRollout(model, head_fusion=args.head_fusion, 
+        attention_rollout = VITAttentionRollout(model, head_fusion=head_fusion, 
             discard_ratio=args.discard_ratio)
         mask = attention_rollout(input_tensor)
-        name = "attention_rollout_{:.3f}_{}.png".format(args.discard_ratio, args.head_fusion)
+        name = "attention_rollout_{:.3f}_{}.png".format(discard_ratio, head_fusion)
     else:
         print("Doing Gradient Attention Rollout")
-        grad_rollout = VITAttentionGradRollout(model, discard_ratio=args.discard_ratio, attention_layer_name=attention_layer_name)
-        mask = grad_rollout(input_tensor, args.category_index)
-        name = "grad_rollout_{}_{:.3f}_{}.png".format(args.category_index,
-            args.discard_ratio, args.head_fusion)
+        grad_rollout = VITAttentionGradRollout(model, discard_ratio=discard_ratio, attention_layer_name=attention_layer_name)
+        mask = grad_rollout(input_tensor, category_index)
+        name = "grad_rollout_{}_{:.3f}_{}.png".format(category_index,
+            discard_ratio, head_fusion)
 
 
     np_img = np.array(img)[:, :, ::-1]
@@ -96,6 +119,12 @@ if __name__ == '__main__':
     mask = show_mask_on_image(np_img, mask)
     #cv2.imshow("Input Image", np_img)
     #cv2.imshow(name, mask)
-    cv2.imwrite("input.png", np_img)
-    cv2.imwrite(name, mask)
+    cv2.imwrite(output_filename, np_img)
+    cv2.imwrite(output_filename, mask)
+    print("wrote file to ", output_filename)
     #cv2.waitKey(-1)
+
+if __name__ == '__main__':
+    args = get_args()
+    main(args.model_path, args.use_cuda, args.category_index, args.head_fusion, args.discard_ratio)
+

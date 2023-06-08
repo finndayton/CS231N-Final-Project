@@ -13,7 +13,7 @@ from ViT_Implementation.utils import *
 
 
 class ViT(nn.Module):
-    def __init__(self, chw = (3, 64, 64), n_patches = 8, n_blocks=4, hidden_dim = 16, n_heads=4, n_classes=10):
+    def __init__(self, chw = (3, 64, 64), n_patches = 8, n_blocks=4, hidden_dim = 16, n_heads=4, n_classes=10, layer=True, res=True, pos="trig"):
         super(ViT, self).__init__()
         self.chw = chw
         self.n_patches = n_patches
@@ -21,6 +21,7 @@ class ViT(nn.Module):
         self.hidden_dim = hidden_dim
         self.n_blocks = n_blocks
         self.n_heads = n_heads
+        self.pos = pos
 
         assert (
             chw[1] % n_patches == 0
@@ -36,17 +37,31 @@ class ViT(nn.Module):
         # Learnable classification token
         self.class_token = nn.Parameter(torch.randn(1, 1, hidden_dim))
 
-        # Positional embedding
-        self.positional_embedding = nn.Parameter(
-            torch.tensor(
-                get_positional_embeddings(self.n_patches**2 + 1, self.hidden_dim)
+        if self.pos == "trig" or self.pos == "integer":
+            # Positional embedding
+            self.positional_embedding = nn.Parameter(
+                torch.tensor(
+                    get_positional_embeddings(self.n_patches**2 + 1, self.hidden_dim, self.pos)
+                )
             )
-        )
-        self.positional_embedding.requires_grad = False
+            self.positional_embedding.requires_grad = False
+            print(f"self.pos = {self.pos} and self.positional_embedding: {self.positional_embedding.size()}")
+            print(f"num_patches: {self.n_patches}, hidden_dim: {self.hidden_dim}")
+            
+            # self.pos = integer and self.positional_embedding: torch.Size([1, 65, 8])
+            # num_patches: 8, hidden_dim: 8
+
+        elif self.pos == "learned":
+            self.positional_embedding = nn.Parameter(torch.zeros(1, self.n_patches**2 + 1, self.hidden_dim))
+        
+            
+            nn.init.normal_(self.positional_embedding, mean=0, std=self.hidden_dim**-0.5) # you may want to tune the initialization method
+        
+
 
         # Transformer encoder blocks
         self.transformer_blocks = nn.Sequential(
-            *[ViTBlock(hidden_dim, n_heads) for _ in range(n_blocks)]
+            *[ViTBlock(hidden_dim, n_heads,res=res ,layer=layer ) for _ in range(n_blocks)]
         )
 
         # MLP. Linear then softmax
@@ -72,10 +87,27 @@ class ViT(nn.Module):
             (self.class_token.repeat(patches.size(0), 1, 1), tokens), dim=1
         )  # (N, n_patches^2 + 1, hidden_dim)
 
-        # add in the positional embedding
+        # add in the positional embeddings
+
+
         tokens += self.positional_embedding.repeat(
             patches.size(0), 1, 1
         )  # (N, n_patches^2 + 1, hidden_dim)
+
+
+        # if self.pos == 'learned':
+        #     # use learned positional embeddings
+        #     print(tokens.shape)
+        #     print(self.positional_embedding.shape)
+        #     tokens += self.positional_embedding[:, :patches.size(0), :].repeat(
+        #         patches.size(0), 1, 1
+        #     )  
+        # elif self.pos == 'sin_cos' or self.pos == "integer":
+        #     # use sin/cos positional embeddings
+        #     tokens += self.positional_embedding.repeat(
+        #     patches.size(0), 1, 1
+        # )
+
 
         # pass through the transformer blocks
         out = self.transformer_blocks(tokens)  # (N, n_patches^2 + 1, hidden_dim)
@@ -91,15 +123,22 @@ class ViT(nn.Module):
 
 # The entire transformer encoder. We can stack these arbitrarily many times
 class ViTBlock(nn.Module):
-    def __init__(self, hidden_d, n_heads, mlp_ratio=4):
+    def __init__(self, hidden_d, n_heads, mlp_ratio=4, res=True, layer=True):
         super(ViTBlock, self).__init__()
         self.hidden_d = hidden_d
         self.n_heads = n_heads
+        self.res = res
+        self.layer = layer
 
-        self.norm1 = nn.LayerNorm(hidden_d)
+        if self.layer:
+            self.norm1 = nn.LayerNorm(hidden_d)
+        
+        
         self.mhsa = MSA(hidden_d, n_heads)
         
-        self.norm2 = nn.LayerNorm(hidden_d)
+        if self.layer:
+            self.norm2 = nn.LayerNorm(hidden_d)
+        
         self.mlp = nn.Sequential(
             nn.Linear(hidden_d, mlp_ratio * hidden_d),
             nn.GELU(),
@@ -107,8 +146,21 @@ class ViTBlock(nn.Module):
         )
 
     def forward(self, x):
-        out = x + self.mhsa(self.norm1(x))  # residual connection
-        out = out + self.mlp(self.norm2(out))  # residual connection
+        if self.res:
+            if self.layer:
+                out = x + self.mhsa(self.norm1(x))  # residual connection
+                out = out + self.mlp(self.norm2(out))  # residual connection
+            else: 
+                out = x + self.mhsa(x)  # residual connection
+                out = out + self.mlp(out)  # residual connection
+        else:
+            if self.layer:
+                out = self.mhsa(self.norm1(x))  # residual connection
+                out = self.mlp(self.norm2(out))  # residual connection
+            else:
+                out = self.mhsa(x)  # residual connection
+                out = self.mlp(out)  # residual connection
+        
         return out
 
 
