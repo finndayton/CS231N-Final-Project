@@ -94,7 +94,7 @@ def segment_image(img_path, threshold=0.3, rect_th=3, text_size=3, text_th=3):
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     for i in range(len(masks)):
-        print(masks[i])
+        # print(masks[i])
         rgb_mask = random_colour_masks(masks[i])
         img = cv2.addWeighted(img, 1, rgb_mask, 0.5, 0)
         cv2.rectangle(img, (int(boxes[i][0][0]), int(boxes[i][0][1])), (int(boxes[i][1][0]), int(boxes[i][1][1])),color=(0, 255, 0), thickness=rect_th)

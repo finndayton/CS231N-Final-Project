@@ -45,7 +45,7 @@ def show_mask_on_image(img, mask):
     return np.uint8(255 * cam)
 
 
-def main(model_path=None, use_cuda=False, category_index=None, head_fusion="max", discard_ratio=0.9):
+def main(image_path, model_path=None, use_cuda=False, category_index=None, head_fusion="max", discard_ratio=0.9):
     model = None
     attention_layer_name = 'attn_drop'
     SIZE = 224
@@ -93,7 +93,7 @@ def main(model_path=None, use_cuda=False, category_index=None, head_fusion="max"
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     ])
-    img = Image.open(args.image_path)
+    img = Image.open(image_path)
     img = img.resize((SIZE, SIZE))
     img = img.convert('RGB')
     input_tensor = transform(img).unsqueeze(0)
@@ -123,6 +123,7 @@ def main(model_path=None, use_cuda=False, category_index=None, head_fusion="max"
     cv2.imwrite(output_filename, mask)
     print("wrote file to ", output_filename)
     #cv2.waitKey(-1)
+    return mask
 
 if __name__ == '__main__':
     args = get_args()

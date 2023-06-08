@@ -29,8 +29,13 @@ def get_positional_embeddings(position, d_model, flag="trig"):
     angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
       
     pos_encoding = angle_rads[np.newaxis, ...]
+    
   elif flag == "integer": 
     pos_encoding =  np.arange(position)[:, np.newaxis]
+
+    #convert to float
+    pos_encoding = torch.from_numpy(pos_encoding).float()
+
 
     
   return pos_encoding

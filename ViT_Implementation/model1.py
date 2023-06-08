@@ -2,10 +2,10 @@ import torch
 from torch import nn
 
 # use this when training model:
-from utils import *
+# from utils import *
 
 # use this when running visualizer
-# from ViT_Implementation.utils import *
+from ViT_Implementation.utils import *
 
 
 # Code is adapted from: https://medium.com/mlearning-ai/vision-transformers-from-scratch-pytorch-a-step-by-step-guide-96c3313c2e0c
@@ -239,7 +239,6 @@ class MSA(nn.Module):
         # reshape output
         out = out.transpose(1, 2).contiguous().view(N, seq_len, -1)  # (N, seq_len, d)
         return out
-
 
 
 

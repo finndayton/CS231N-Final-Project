@@ -80,7 +80,7 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
         pos=pos
     ).to(device)
 
-    filename_base = f"{n_heads}_{n_blocks}_{hidden_dim}_{layer}_{res}"
+    filename_base = f"{n_heads}_{n_blocks}_{hidden_dim}_{layer}_{res}_{pos}"
     model_name = f"trained_models/{filename_base}.pth"
     cm_path = f"cm/{filename_base}.png"
 
@@ -88,7 +88,7 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
     optimizer = Adam(model.parameters(), lr=LR)
     criterion = CrossEntropyLoss()
     if train:
-        N_EPOCHS = 1
+        N_EPOCHS = 100
 
         # Training loop
         train_accuracy = 0
@@ -173,6 +173,7 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
     plt.ylabel('True Class', fontsize = 18)
     plt.xticks(np.arange(0.5, classes[-1] + 1.5), classes, fontsize = 20)
     plt.yticks(np.arange(0.5, classes[-1] + 1.5), classes, fontsize = 20)
+    print(cm_path)
     plt.savefig(cm_path)
 
     f1 = f1_score(all_labels, all_outputs, average="macro")
