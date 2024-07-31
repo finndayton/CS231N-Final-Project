@@ -9,7 +9,7 @@ from datasets import load_dataset
 import argparse
 
 import cv2
-from PIL import Image
+# from PIL import Image
 
 import time
 
