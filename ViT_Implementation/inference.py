@@ -15,6 +15,9 @@ import matplotlib.pyplot as plt
 import seaborn as sm
 import pandas as pd
 
+import cv2
+from PIL import Image
+
 
 
 from model import ViT
@@ -23,6 +26,15 @@ from model import ViT
 # Credit goes to Brian Pulfer
  
 def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
+    
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 64)
+    cap.set(cv2.CAP_PROP_FPS, 36)
+    
+    ret, image = cap.read()
+    image = image[:,:,[2,1,]]
+    
     print('here')
     # Loading data
     # transform = ToTensor()
@@ -39,7 +51,7 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
         return example
     
     dataset = load_dataset("Maysee/tiny-imagenet")
-    print(dataset)
+    # print(dataset)
 
     filtered_test_set = []
 
@@ -53,13 +65,13 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
     test_set.set_format(type='torch', columns=['image', 'label'])
     
     
-    print(f"size of train set: {len(train_set)}")
-    print(f"size of test set: {len(test_set)}")
+    #print(f"size of train set: {len(train_set)}")
+    #print(f"size of test set: {len(test_set)}")
     test_loader = DataLoader(test_set, shuffle=True, batch_size=128)
 
-    image = test_set[0]['image']  # Get the first image from the dataset (ignoring the label)
+    #image = test_set[0]['image']  # Get the first image from the dataset (ignoring the label)
     image_dims = image.shape
-    print(f"test set type: {type(test_set)}")
+    #print(f"test set type: {type(test_set)}")
     print(image_dims)
 
     # # Display image
