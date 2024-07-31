@@ -23,6 +23,7 @@ from model import ViT
 # Credit goes to Brian Pulfer
  
 def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
+    print('here')
     # Loading data
     # transform = ToTensor()
     transform = Compose([
