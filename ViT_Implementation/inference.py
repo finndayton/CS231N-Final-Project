@@ -6,14 +6,7 @@ from torchvision.transforms import ToTensor, Lambda
 from torchvision.datasets import CIFAR10, ImageNet
 from torchvision.transforms import Compose, Resize, ToTensor
 from datasets import load_dataset
-from tqdm import tqdm, trange
 import argparse
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, roc_auc_score
-import random
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sm
-import pandas as pd
 
 import cv2
 from PIL import Image
