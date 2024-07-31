@@ -18,6 +18,7 @@ import pandas as pd
 import cv2
 from PIL import Image
 
+import time
 
 
 from model import ViT
@@ -31,10 +32,6 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 64)
     cap.set(cv2.CAP_PROP_FPS, 36)
-    
-    ret, image = cap.read()
-    image = image[:,:,[2,1,]]
-    
     print('here')
     # Loading data
     # transform = ToTensor()
@@ -106,14 +103,38 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
 
     model.load_state_dict(torch.load(model_name))
     
+    started = time.time()
+    last_logged = time.time()
+    frame_count = 0
+
+    class_labels = ["Fish", "Salamander", "Tailed Frog", "Bullfrog", "American Alligator", "Boa Constrictor", "Trilobite", "Scorpion", "Black Widow", "Tarantula"]
+    with torch.no_grad():
+        while True:
+
+    
+            ret, image = cap.read()
+            image = image[:,:,[2,1,]]
+
+            #input tensor 
+            input_tensor = transform(image)
+
+            y = model(input_tensor.unsqueeze(0))
+            max_class_index = torch.argmax(y)
+            predicted_class_name = class_labels[max_class_index]
+            print(predicted_class_name)
+
+
+             # log model performance
+            frame_count += 1
+            now = time.time()
+            if now - last_logged > 1:
+                print(f"{frame_count / (now-last_logged)} fps")
+                last_logged = now
+                frame_count = 0
+
+    
      # images size = [N, C, H, W]
      # image: torch.Size([3, 64, 64])
-    y = model(image.unsqueeze(0))
-    max_class_index = torch.argmax(y)
-    class_labels = ["Fish", "Salamander", "Tailed Frog", "Bullfrog", "American Alligator", "Boa Constrictor", "Trilobite", "Scorpion", "Black Widow", "Tarantula"]
-    predicted_class_name = class_labels[max_class_index]
-    print(y)
-    print(predicted_class_name)
     
 
 
