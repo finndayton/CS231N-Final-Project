@@ -20,7 +20,7 @@ from model import ViT
 
 # Code is adapted from: https://medium.com/mlearning-ai/vision-transformers-from-scratch-pytorch-a-step-by-step-guide-96c3313c2e0c
 # Credit goes to Brian Pulfer
-
+ 
 def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
     # Loading data
     # transform = ToTensor()
@@ -37,7 +37,7 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
         return example
     
     dataset = load_dataset("Maysee/tiny-imagenet")
-    print(dataset)
+    # print(dataset)
 
     filtered_train_set = []
     filtered_test_set = []
@@ -114,8 +114,8 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
                 loss.backward()
                 optimizer.step()
             train_accuracy = t_correct / t_total * 100
-            print(f"Train accuracy: {train_accuracy:.2f}%")
-            print(f"Epoch {epoch + 1}/{N_EPOCHS} loss: {train_loss:.2f}")
+            # print(f"Train accuracy: {train_accuracy:.2f}%")
+            # print(f"Epoch {epoch + 1}/{N_EPOCHS} loss: {train_loss:.2f}")
         
         print(f"Trained model with {n_heads} heads, {n_blocks} blocks, {hidden_dim} dims, {layer} norm, {res} res {pos} pos with train accuracy {train_accuracy:.2f}%")
     else:
@@ -143,50 +143,52 @@ def main(n_heads, n_blocks, hidden_dim, layer, res, pos, train=True):
 
             correct += torch.sum(torch.argmax(y_hat, dim=1) == y).detach().cpu().item()
             total += len(x)
-        print(f"Test loss: {test_loss:.2f}")
+        # print(f"Test loss: {test_loss:.2f}")
         test_accuracy = correct / total * 100
-        print(f"Test accuracy: {test_accuracy:.2f}%")
+        print(f"Test accuracy: {test_accuracy:.2f}%\n")
     # save the model to disk
 
-    all_labels = np.array(y_total)
-    all_outputs = np.array(yhat_total)
-    y_scores = np.array(yhat_total_no_argmax)
-    print(all_labels[:20])
-    print(all_outputs[:20])
+    # all_labels = np.array(y_total)
+    # all_outputs = np.array(yhat_total)
+    # y_scores = np.array(yhat_total_no_argmax)
+    # print(all_labels[:20])
+    # print(all_outputs[:20])
 
-    print(f"Tested model with {n_heads} heads, {n_blocks} blocks, {hidden_dim} dims, {layer} norm, {res} res with test accuracy {test_accuracy:.2f}%")
+    # print(f"Tested model with {n_heads} heads, {n_blocks} blocks, {hidden_dim} dims, {layer} norm, {res} res with test accuracy {test_accuracy:.2f}%")
 
-    cm = confusion_matrix(all_labels, all_outputs)
-    print("Confusion Matrix:", cm)
+    # cm = confusion_matrix(all_labels, all_outputs)
+    # print("Confusion Matrix:", cm)
 
-    classes = range(10)
-    # Build a dataframe
-    df_cm = pd.DataFrame(cm / np.sum(cm, axis=1)[:, None], index = [i for i in classes],
-                        columns = [i for i in classes])
+    # classes = range(10)
+    # # Build a dataframe
+    # df_cm = pd.DataFrame(cm / np.sum(cm, axis=1)[:, None], index = [i for i in classes],
+    #                     columns = [i for i in classes])
 
-    # Plot the heatmap with the custom colormap
-    cmap = plt.cm.get_cmap('Greens', 5)
-    plt.figure(figsize = (12,7))
-    sm.heatmap(df_cm, annot=True, cmap=cmap, annot_kws={"size": 16})
-    plt.title(f'Confusion Matrix {filename_base}', fontsize = 12)
-    plt.xlabel('Predicted Class', fontsize = 18)
-    plt.ylabel('True Class', fontsize = 18)
-    plt.xticks(np.arange(0.5, classes[-1] + 1.5), classes, fontsize = 20)
-    plt.yticks(np.arange(0.5, classes[-1] + 1.5), classes, fontsize = 20)
-    print(cm_path)
-    plt.savefig(cm_path)
+    # # Plot the heatmap with the custom colormap
+    # cmap = plt.cm.get_cmap('Greens', 5)
+    # plt.figure(figsize = (12,7))
+    # sm.heatmap(df_cm, annot=True, cmap=cmap, annot_kws={"size": 16})
+    # plt.title(f'Confusion Matrix {filename_base}', fontsize = 12)
+    # plt.xlabel('Predicted Class', fontsize = 18)
+    # plt.ylabel('True Class', fontsize = 18)
+    # plt.xticks(np.arange(0.5, classes[-1] + 1.5), classes, fontsize = 20)
+    # plt.yticks(np.arange(0.5, classes[-1] + 1.5), classes, fontsize = 20)
+    # print(cm_path)
+    # plt.savefig(cm_path)
 
-    f1 = f1_score(all_labels, all_outputs, average="macro")
-    print("F1 Score:", f1)
+    # f1 = f1_score(all_labels, all_outputs, average="macro")
+    # print("F1 Score:", f1)
 
-    precision = precision_score(all_labels, all_outputs, average="macro")
-    print("Precision: ", precision)
+    # precision = precision_score(all_labels, all_outputs, average="macro")
+    # print("Precision: ", precision)
 
-    recall = recall_score(all_labels, all_outputs, average="macro")
-    print("Recall: ", recall)
+    # recall = recall_score(all_labels, all_outputs, average="macro")
+    # print("Recall: ", recall)
 
-    roc_auc = roc_auc_score(all_labels, y_scores, multi_class='ovr')
-    print('ROC AUC Score: ', roc_auc)
+    # roc_auc = roc_auc_score(all_labels, y_scores, multi_class='ovr')
+    # print('ROC AUC Score: ', roc_auc)
+
+    
 
     if train:
         torch.save(model.state_dict(), model_name)
@@ -213,4 +215,5 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(args.n_heads, args.n_blocks, args.hidden_dim, True, True)
+#    def main(n_heads,      n_blocks,      hidden_dim, layer, res, pos, train=True):
+    main(args.n_heads, args.n_blocks, args.hidden_dim, True,  True, args.pos)

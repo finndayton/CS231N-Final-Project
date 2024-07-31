@@ -5,7 +5,7 @@ from torch import nn
 # from utils import *
 
 # use this when running visualizer
-from ViT_Implementation.utils import *
+from utils import *
 
 
 # Code is adapted from: https://medium.com/mlearning-ai/vision-transformers-from-scratch-pytorch-a-step-by-step-guide-96c3313c2e0c
@@ -55,9 +55,7 @@ class ViT(nn.Module):
             self.positional_embedding = nn.Parameter(torch.zeros(1, self.n_patches**2 + 1, self.hidden_dim))
         
             
-            nn.init.normal_(self.positional_embedding, mean=0, std=self.hidden_dim**-0.5) # you may want to tune the initialization method
-        
-
+            nn.init.normal_(self.positional_embedding, mean=0, std=self.hidden_dim**-0.5) # you may want to tune the initialization method        
 
         # Transformer encoder blocks
         self.transformer_blocks = nn.Sequential(
@@ -86,9 +84,7 @@ class ViT(nn.Module):
         tokens = torch.cat(
             (self.class_token.repeat(patches.size(0), 1, 1), tokens), dim=1
         )  # (N, n_patches^2 + 1, hidden_dim)
-
         # add in the positional embeddings
-
 
         tokens += self.positional_embedding.repeat(
             patches.size(0), 1, 1
